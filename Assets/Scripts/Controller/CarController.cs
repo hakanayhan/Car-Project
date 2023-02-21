@@ -10,37 +10,46 @@ namespace CarProject.Car
     {
         public float _steeringAngle;
 
-        public WheelCollider frontRightW, frontLeftW;
-        public WheelCollider rearRightW, rearLeftW;
-        public Transform frontRightT, frontLeftT;
-        public Transform rearRightT, rearLeftT;
+        public WheelCollider[] wheelsCollider = new WheelCollider[4];
+        public Transform[] wheelsTransform = new Transform[4];
+        [SerializeField] private Rigidbody rb;
 
         public bool isBrake, isHandBrake;
 
         [SerializeField] private CarSettings _carSettings;
         [SerializeField] private InputData _inputData;
 
-
+        public float downForceValue = 50;
+        public GameObject centerOfMass;
         public float frontRpm;
         public float rearRpm;
+
+        private void Start()
+        {
+            rb.centerOfMass = centerOfMass.transform.localPosition;
+        }
 
         private void FixedUpdate()
         {
             Steer();
             Accelerate();
-            UpdateWheelPoses();
             HandBrake();
+            UpdateWheelPoses();
+            addDownForce();
+            getFriction();
 
-            frontRpm = frontRightW.rpm;
-            rearRpm = rearRightW.rpm;
+            frontRpm = wheelsCollider[0].rpm;
+            rearRpm = wheelsCollider[2].rpm;
 
         }
 
         private void Steer()
         {
             _steeringAngle = _carSettings.maxSteerAngle * _inputData.Horizontal;
-            frontLeftW.steerAngle = _steeringAngle;
-            frontRightW.steerAngle = _steeringAngle;
+            for(int i = 0; i < 2; i++) {
+                wheelsCollider[i].steerAngle = _steeringAngle;
+            }
+            
         }
 
         private void Accelerate()
@@ -48,24 +57,26 @@ namespace CarProject.Car
             checkBrake();
             if (!isBrake)
             {
-                rearLeftW.motorTorque = _inputData.Vertical * _carSettings.motorForce;
-                rearRightW.motorTorque = _inputData.Vertical * _carSettings.motorForce;
+                for (int i = 2; i < wheelsCollider.Length; i++)
+                {
+                    wheelsCollider[i].motorTorque = _inputData.Vertical * _carSettings.motorForce;
+                }
             }
             else
             {
-                rearLeftW.brakeTorque = _carSettings.brakeForce;
-                rearRightW.brakeTorque = _carSettings.brakeForce;
-                frontLeftW.brakeTorque = _carSettings.brakeForce;
-                frontRightW.brakeTorque = _carSettings.brakeForce;
+                for (int i = 0; i < wheelsCollider.Length; i++)
+                {
+                    wheelsCollider[i].brakeTorque = _carSettings.brakeForce;
+                }
             }
         }
 
         private void UpdateWheelPoses()
         {
-            UpdateWheelPose(frontLeftW, frontLeftT);
-            UpdateWheelPose(frontRightW, frontRightT);
-            UpdateWheelPose(rearLeftW, rearLeftT);
-            UpdateWheelPose(rearRightW, rearRightT);
+            for (int i = 0; i < wheelsCollider.Length; i++)
+            {
+                UpdateWheelPose(wheelsCollider[i], wheelsTransform[i]);
+            }
         }
 
         private void UpdateWheelPose(WheelCollider _collider, Transform _transform)
@@ -81,19 +92,21 @@ namespace CarProject.Car
 
         private void checkBrake()
         {
-            if (_inputData.Vertical < 0 && frontRightW.rpm > 10 || _inputData.Vertical > 0 && frontRightW.rpm < -10)
+            if (_inputData.Vertical < 0 && wheelsCollider[0].rpm > 10 || _inputData.Vertical > 0 && wheelsCollider[0].rpm < -10)
             {
-                rearLeftW.motorTorque = 0;
-                rearRightW.motorTorque = 0;
+                for (int i = 2; i < wheelsCollider.Length; i++)
+                {
+                    wheelsCollider[i].motorTorque = 0;
+                }
                 isBrake = true;
             }
             else
             {
                 isBrake = false;
-                rearLeftW.brakeTorque = 0;
-                rearRightW.brakeTorque = 0;
-                frontLeftW.brakeTorque = 0;
-                frontRightW.brakeTorque = 0;
+                for (int i = 0; i < wheelsCollider.Length; i++)
+                {
+                    wheelsCollider[i].brakeTorque = 0;
+                }
             }
         }
 
@@ -102,15 +115,24 @@ namespace CarProject.Car
             isHandBrake = (Input.GetKey(_inputData.HandBrakeKey) == true) ? true : false;
             if (isHandBrake)
             {
-                rearLeftW.brakeTorque = _carSettings.handBrakeForce;
-                rearRightW.brakeTorque = _carSettings.handBrakeForce;
-            }
-            else if (!isBrake)
-            {
-                rearLeftW.brakeTorque = 0;
-                rearRightW.brakeTorque = 0;
+                for (int i = 2; i < wheelsCollider.Length; i++)
+                {
+                    wheelsCollider[i].brakeTorque = _carSettings.handBrakeForce;
+                }
             }
         }
 
+        private void addDownForce()
+        {
+            rb.AddForce(downForceValue * rb.velocity.magnitude * -transform.up);
+        }
+
+        private void getFriction()
+        {
+            for (int i = 0; i < wheelsCollider.Length; i++){
+                WheelHit wheelHit;
+                wheelsCollider[i].GetGroundHit(out wheelHit);
+            }
+        }
     }
 }
