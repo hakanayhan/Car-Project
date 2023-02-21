@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: CarSettings_LocalCar
   m_EditorClassIdentifier: 
   maxSteerAngle: 30
-  motorForce: 250
-  brakeForce: 10000
+  motorForce: 1000
+  brakeForce: 2500
   isHandBrake: 0
-  handBrakeForce: 3000
+  handBrakeForce: 2500

@@ -117,6 +117,7 @@ Transform:
   - {fileID: 7069387857366784590}
   - {fileID: 7069387859028916994}
   - {fileID: 7069387858515292595}
+  - {fileID: 8901627293654306958}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -149,18 +150,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _steeringAngle: 0
-  frontRightW: {fileID: 7069387859058020748}
-  frontLeftW: {fileID: 7069387857521252472}
-  rearRightW: {fileID: 7069387857958623334}
-  rearLeftW: {fileID: 7069387857373229131}
-  frontRightT: {fileID: 7069387857171568026}
-  frontLeftT: {fileID: 7069387858435786500}
-  rearRightT: {fileID: 7069387857360382663}
-  rearLeftT: {fileID: 7069387858085015419}
+  wheelsCollider:
+  - {fileID: 7069387857521252472}
+  - {fileID: 7069387859058020748}
+  - {fileID: 7069387857373229131}
+  - {fileID: 7069387857958623334}
+  wheelsTransform:
+  - {fileID: 7069387858435786500}
+  - {fileID: 7069387857171568026}
+  - {fileID: 7069387858085015419}
+  - {fileID: 7069387857360382663}
+  rb: {fileID: 7069387857287947436}
   isBrake: 0
   isHandBrake: 0
   _carSettings: {fileID: 11400000, guid: 0b2208f56fe50e54e9ea2b2eb3947a37, type: 2}
   _inputData: {fileID: 11400000, guid: a71fd1c6a6009094585c750c29e5f8c7, type: 2}
+  downForceValue: 50
+  centerOfMass: {fileID: 7787462423488592158}
   frontRpm: 0
   rearRpm: 0
 --- !u!1 &7069387857360382264
@@ -1044,3 +1050,34 @@ WheelCollider:
     m_AsymptoteValue: 0.75
     m_Stiffness: 1
   m_Enabled: 1
+--- !u!1 &7787462423488592158
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8901627293654306958}
+  m_Layer: 0
+  m_Name: Mass
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8901627293654306958
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7787462423488592158}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7069387857287947435}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
