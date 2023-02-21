@@ -9,6 +9,7 @@ namespace CarProject.Car
     public class CarController : MonoBehaviour
     {
         public float _steeringAngle;
+        public float KPH;
 
         public WheelCollider[] wheelsCollider = new WheelCollider[4];
         public Transform[] wheelsTransform = new Transform[4];
@@ -37,7 +38,6 @@ namespace CarProject.Car
             UpdateWheelPoses();
             addDownForce();
             getFriction();
-
             frontRpm = wheelsCollider[0].rpm;
             rearRpm = wheelsCollider[2].rpm;
 
@@ -69,6 +69,7 @@ namespace CarProject.Car
                     wheelsCollider[i].brakeTorque = _carSettings.brakeForce;
                 }
             }
+            KPH = rb.velocity.magnitude * 3.6f;
         }
 
         private void UpdateWheelPoses()

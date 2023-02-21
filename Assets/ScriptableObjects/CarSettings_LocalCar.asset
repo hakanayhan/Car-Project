@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxSteerAngle: 30
   motorForce: 1000
-  brakeForce: 2500
+  brakeForce: 1000
   isHandBrake: 0
-  handBrakeForce: 2500
+  handBrakeForce: 5000
