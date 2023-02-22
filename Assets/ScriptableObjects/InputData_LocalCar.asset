@@ -15,5 +15,4 @@ MonoBehaviour:
   Horizontal: 0
   Vertical: 0
   HandBrakeKey: 32
-  GearUpKey: 101
-  GearDownKey: 113
+  GearUpKey: 114

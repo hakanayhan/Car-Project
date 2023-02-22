@@ -21,16 +21,20 @@ namespace CarProject.CarController
 
         [SerializeField] private CarSettings _carSettings;
         [SerializeField] private InputData _inputData;
+        [SerializeField] private GameManager _gm;
 
         public float engineRPM;
         public float smoothTime = 0.01f;
         public float[] gears;
         public int gearNum = 0;
 
+        public bool reverse;
+
         public float downForceValue = 50;
         public GameObject centerOfMass;
         public float frontRpm;
         public float rearRpm;
+        
 
         private void Start()
         {
@@ -65,9 +69,13 @@ namespace CarProject.CarController
         private void CalculateEnginePower()
         {
             WheelRPM();
-            totalPower = (_carSettings.enginePower.Evaluate(engineRPM) * (gears[gearNum]) * _inputData.Vertical);
+            if (!isBrake)
+            {
+                totalPower = (_carSettings.enginePower.Evaluate(engineRPM) * (gears[gearNum]) * _inputData.Vertical);
+            }
             float velocity = 0.0f;
             engineRPM = Mathf.SmoothDamp(engineRPM, 1000 + (Mathf.Abs(wheelsRPM) * 3.6f * gears[gearNum]), ref velocity, smoothTime);
+            
 
         }
 
@@ -82,6 +90,16 @@ namespace CarProject.CarController
             }
             wheelsRPM = (R != 0) ? sum / R : 0;
 
+            if(wheelsRPM < -15 && !reverse)
+            {
+                reverse = true;
+                _gm.ChangeGear("R");
+            }else if (wheelsRPM > 15 && reverse)
+            {
+                reverse = false;
+                _gm.ChangeGear(gearNum.ToString());
+            }
+
         }
 
         private void Accelerate()
@@ -89,25 +107,25 @@ namespace CarProject.CarController
             CheckBrake();
             if (!isBrake)
             {
-                if (_carSettings.drive == CarSettings.driveType.rearWheelDrive)
+                if (_carSettings.drive == CarSettings.DriveType.rearWheelDrive)
                 {
                     for (int i = 2; i < wheelsCollider.Length; i++)
                     {
-                        wheelsCollider[i].motorTorque = _inputData.Vertical * (totalPower / 2);
+                        wheelsCollider[i].motorTorque = totalPower / 2;
                     }
                 }
-                else if (_carSettings.drive == CarSettings.driveType.frontWheelDrive)
+                else if (_carSettings.drive == CarSettings.DriveType.frontWheelDrive)
                 {
                     for (int i = 0; i < 2; i++)
                     {
-                        wheelsCollider[i].motorTorque = _inputData.Vertical * (totalPower / 2);
+                        wheelsCollider[i].motorTorque = totalPower / 2;
                     }
                 }
-                else if (_carSettings.drive == CarSettings.driveType.allWheelDrive)
+                else if (_carSettings.drive == CarSettings.DriveType.allWheelDrive)
                 {
                     for (int i = 0; i < wheelsCollider.Length; i++)
                     {
-                        wheelsCollider[i].motorTorque = _inputData.Vertical * (totalPower / 4);
+                        wheelsCollider[i].motorTorque = totalPower / 4;
                     }
                 }
             }
@@ -142,7 +160,7 @@ namespace CarProject.CarController
 
         private void CheckBrake()
         {
-            if (_inputData.Vertical < 0 && wheelsCollider[0].rpm > 10 || _inputData.Vertical > 0 && wheelsCollider[0].rpm < -10)
+            if (_inputData.Vertical < 0 && wheelsRPM > 10 || _inputData.Vertical > 0 && wheelsRPM < -10)
             {
                 for (int i = 2; i < wheelsCollider.Length; i++)
                 {
@@ -187,17 +205,38 @@ namespace CarProject.CarController
 
         private void Shifter()
         {
-            if (Input.GetKeyDown(_inputData.GearUpKey))
+            if (!IsGrounded()) return;
+            if (_carSettings.gearBox == CarSettings.GearBox.automatic)
             {
-                gearNum++;
+                //automatic
+                if (engineRPM > _carSettings.maxRPM && gearNum < gears.Length - 1 && !reverse)
+                {
+                    gearNum++;
+                    _gm.ChangeGear(gearNum.ToString());
+                }
             }
-            if (Input.GetKeyDown(_inputData.GearDownKey))
+            else
+            {
+                //manuel
+                if (Input.GetKeyDown(_inputData.GearUpKey))
+                {
+                    gearNum++;
+                    _gm.ChangeGear(gearNum.ToString());
+                }
+            }
+
+            if (engineRPM < _carSettings.minRPM && gearNum > 1)
             {
                 gearNum--;
+                _gm.ChangeGear(gearNum.ToString());
             }
+
         }
 
-        
+        private bool IsGrounded()
+        {
+            return (wheelsCollider[0].isGrounded && wheelsCollider[1].isGrounded && wheelsCollider[2].isGrounded && wheelsCollider[3].isGrounded);
+        }
 
     }
 }

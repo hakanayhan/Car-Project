@@ -11,6 +11,5 @@ namespace CarProject.PlayerInput
         public float Vertical;
         public KeyCode HandBrakeKey;
         public KeyCode GearUpKey;
-        public KeyCode GearDownKey;
     }
 }

@@ -7,13 +7,22 @@ namespace CarProject.CarController
     [CreateAssetMenu(menuName = "Car Project/Car/Car Settings")]
     public class CarSettings : ScriptableObject
     {
-        public enum driveType
+        public enum DriveType
         {
             frontWheelDrive,
             rearWheelDrive,
             allWheelDrive
         }
-        public driveType drive;
+
+        public enum GearBox
+        {
+            automatic,
+            manuel
+        }
+        public float maxRPM, minRPM;
+
+        public DriveType drive;
+        public GearBox gearBox;
 
         public AnimationCurve enginePower;
 

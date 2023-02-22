@@ -12,7 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81d218544ba03ab49861a99cc40d3615, type: 3}
   m_Name: CarSettings_LocalCar
   m_EditorClassIdentifier: 
+  maxRPM: 5500
+  minRPM: 2000
   drive: 1
+  gearBox: 0
   enginePower:
     serializedVersion: 2
     m_Curve:
@@ -25,6 +28,15 @@ MonoBehaviour:
       weightedMode: 0
       inWeight: 0
       outWeight: 0
+    - serializedVersion: 3
+      time: 1306.4951
+      value: 513.42896
+      inSlope: 0.34916282
+      outSlope: 0.34916282
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
     - serializedVersion: 3
       time: 4499.1187
       value: 1003.9746
@@ -46,7 +58,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  maxSteerAngle: 30
-  brakeForce: 2500
+  maxSteerAngle: 45
+  brakeForce: 1000
   isHandBrake: 0
-  handBrakeForce: 2500
+  handBrakeForce: 5000
