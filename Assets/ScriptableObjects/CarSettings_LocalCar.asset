@@ -13,8 +13,40 @@ MonoBehaviour:
   m_Name: CarSettings_LocalCar
   m_EditorClassIdentifier: 
   drive: 1
+  enginePower:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 4499.1187
+      value: 1003.9746
+      inSlope: -0.058216266
+      outSlope: -0.058216266
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 8505.878
+      value: 0.13293457
+      inSlope: 0.19179147
+      outSlope: 0.19179147
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   maxSteerAngle: 30
-  motorForce: 1000
-  brakeForce: 1000
+  brakeForce: 2500
   isHandBrake: 0
-  handBrakeForce: 5000
+  handBrakeForce: 2500

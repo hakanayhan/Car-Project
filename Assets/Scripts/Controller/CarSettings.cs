@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace CarProject.Car
+namespace CarProject.CarController
 {
     [CreateAssetMenu(menuName = "Car Project/Car/Car Settings")]
     public class CarSettings : ScriptableObject
@@ -15,8 +15,9 @@ namespace CarProject.Car
         }
         public driveType drive;
 
+        public AnimationCurve enginePower;
+
         public float maxSteerAngle = 30;
-        public float motorForce = 2000;
 
         public float brakeForce = 2000;
 

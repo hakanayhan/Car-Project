@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using CarProject.PlayerInput;
 
-namespace CarProject.Car
+namespace CarProject.CarController
 {
 
     public class CarController : MonoBehaviour
     {
         public float _steeringAngle;
         public float KPH;
+        public float wheelsRPM;
+        public float totalPower;
 
         public WheelCollider[] wheelsCollider = new WheelCollider[4];
         public Transform[] wheelsTransform = new Transform[4];
@@ -19,6 +21,11 @@ namespace CarProject.Car
 
         [SerializeField] private CarSettings _carSettings;
         [SerializeField] private InputData _inputData;
+
+        public float engineRPM;
+        public float smoothTime = 0.01f;
+        public float[] gears;
+        public int gearNum = 0;
 
         public float downForceValue = 50;
         public GameObject centerOfMass;
@@ -33,11 +40,14 @@ namespace CarProject.Car
         private void FixedUpdate()
         {
             Steer();
+            CalculateEnginePower();
             Accelerate();
             HandBrake();
             UpdateWheelPoses();
-            addDownForce();
-            getFriction();
+            AddDownForce();
+            GetFriction();
+            
+            Shifter();
             frontRpm = wheelsCollider[0].rpm;
             rearRpm = wheelsCollider[2].rpm;
 
@@ -52,30 +62,52 @@ namespace CarProject.Car
             
         }
 
+        private void CalculateEnginePower()
+        {
+            WheelRPM();
+            totalPower = (_carSettings.enginePower.Evaluate(engineRPM) * (gears[gearNum]) * _inputData.Vertical);
+            float velocity = 0.0f;
+            engineRPM = Mathf.SmoothDamp(engineRPM, 1000 + (Mathf.Abs(wheelsRPM) * 3.6f * gears[gearNum]), ref velocity, smoothTime);
+
+        }
+
+        private void WheelRPM()
+        {
+            float sum = 0;
+            int R = 0;
+            for (int i = 0; i < 4; i++)
+            {
+                sum += wheelsCollider[i].rpm;
+                R++;
+            }
+            wheelsRPM = (R != 0) ? sum / R : 0;
+
+        }
+
         private void Accelerate()
         {
-            checkBrake();
+            CheckBrake();
             if (!isBrake)
             {
                 if (_carSettings.drive == CarSettings.driveType.rearWheelDrive)
                 {
                     for (int i = 2; i < wheelsCollider.Length; i++)
                     {
-                        wheelsCollider[i].motorTorque = _inputData.Vertical * (_carSettings.motorForce / 2);
+                        wheelsCollider[i].motorTorque = _inputData.Vertical * (totalPower / 2);
                     }
                 }
                 else if (_carSettings.drive == CarSettings.driveType.frontWheelDrive)
                 {
                     for (int i = 0; i < 2; i++)
                     {
-                        wheelsCollider[i].motorTorque = _inputData.Vertical * (_carSettings.motorForce / 2);
+                        wheelsCollider[i].motorTorque = _inputData.Vertical * (totalPower / 2);
                     }
                 }
                 else if (_carSettings.drive == CarSettings.driveType.allWheelDrive)
                 {
                     for (int i = 0; i < wheelsCollider.Length; i++)
                     {
-                        wheelsCollider[i].motorTorque = _inputData.Vertical * (_carSettings.motorForce / 4);
+                        wheelsCollider[i].motorTorque = _inputData.Vertical * (totalPower / 4);
                     }
                 }
             }
@@ -108,7 +140,7 @@ namespace CarProject.Car
             _transform.rotation = _quat;
         }
 
-        private void checkBrake()
+        private void CheckBrake()
         {
             if (_inputData.Vertical < 0 && wheelsCollider[0].rpm > 10 || _inputData.Vertical > 0 && wheelsCollider[0].rpm < -10)
             {
@@ -140,16 +172,28 @@ namespace CarProject.Car
             }
         }
 
-        private void addDownForce()
+        private void AddDownForce()
         {
             rb.AddForce(downForceValue * rb.velocity.magnitude * -transform.up);
         }
 
-        private void getFriction()
+        private void GetFriction()
         {
             for (int i = 0; i < wheelsCollider.Length; i++){
                 WheelHit wheelHit;
                 wheelsCollider[i].GetGroundHit(out wheelHit);
+            }
+        }
+
+        private void Shifter()
+        {
+            if (Input.GetKeyDown(_inputData.GearUpKey))
+            {
+                gearNum++;
+            }
+            if (Input.GetKeyDown(_inputData.GearDownKey))
+            {
+                gearNum--;
             }
         }
 
