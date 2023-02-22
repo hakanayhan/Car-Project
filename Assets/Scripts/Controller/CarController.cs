@@ -57,9 +57,26 @@ namespace CarProject.Car
             checkBrake();
             if (!isBrake)
             {
-                for (int i = 2; i < wheelsCollider.Length; i++)
+                if (_carSettings.drive == CarSettings.driveType.rearWheelDrive)
                 {
-                    wheelsCollider[i].motorTorque = _inputData.Vertical * _carSettings.motorForce;
+                    for (int i = 2; i < wheelsCollider.Length; i++)
+                    {
+                        wheelsCollider[i].motorTorque = _inputData.Vertical * (_carSettings.motorForce / 2);
+                    }
+                }
+                else if (_carSettings.drive == CarSettings.driveType.frontWheelDrive)
+                {
+                    for (int i = 0; i < 2; i++)
+                    {
+                        wheelsCollider[i].motorTorque = _inputData.Vertical * (_carSettings.motorForce / 2);
+                    }
+                }
+                else if (_carSettings.drive == CarSettings.driveType.allWheelDrive)
+                {
+                    for (int i = 0; i < wheelsCollider.Length; i++)
+                    {
+                        wheelsCollider[i].motorTorque = _inputData.Vertical * (_carSettings.motorForce / 4);
+                    }
                 }
             }
             else
@@ -135,5 +152,8 @@ namespace CarProject.Car
                 wheelsCollider[i].GetGroundHit(out wheelHit);
             }
         }
+
+        
+
     }
 }

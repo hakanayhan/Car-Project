@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81d218544ba03ab49861a99cc40d3615, type: 3}
   m_Name: CarSettings_LocalCar
   m_EditorClassIdentifier: 
+  drive: 1
   maxSteerAngle: 30
   motorForce: 1000
   brakeForce: 1000
